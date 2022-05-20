@@ -36,7 +36,6 @@ export const Field: React.FC<tFieldProps> = React.memo((props) => {
                 fill: 'red',
                 stroke: 'black',
                 strokeWidth: 4,
-                draggable: true,
             })
             layer.add(circle)
             stage.add(layer)

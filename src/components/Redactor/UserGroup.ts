@@ -1,15 +1,12 @@
 import Konva from 'konva'
 
-interface iUserShape {
-    getPosition: () => void,
-}
-export class UserShape extends Konva.Circle {
+export class UserGroup extends Konva.Circle {
 
     constructor(config: Konva.CircleConfig) {
         super(config)
         this.addEventListener('dblclick', (event) => {
+            console.log('set state with group')
             event.cancelBubble = true
         })
     }
-
 }
