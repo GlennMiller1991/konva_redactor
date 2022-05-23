@@ -5,23 +5,23 @@ import {EditBar} from './EditBar/EditBar'
 import {tDrawingObject} from './types'
 
 type tRedactorProps = {
-    objects: Array<tDrawingObject>
+    object: tDrawingObject,
     redactorClassName?: '',
 }
 export const Redactor: React.FC<tRedactorProps> = React.memo(({
-                                                                  objects,
+                                                                  object,
                                                                   redactorClassName,
                                                               }) => {
-    const [allObjects, setAllObjects] = useState<Array<tDrawingObject>>(objects)
+    const [allObjects, setAllObjects] = useState<tDrawingObject>(object)
     const [currentObject, setCurrentObject] = useState<tDrawingObject | null>(null)
 
     useEffect(() => {
         setAllObjects(allObjects)
-    }, [objects])
+    }, [object])
 
     return (
         <div className={`${styles.redactor} ${redactorClassName}`}>
-            <Field setEditingObject={setCurrentObject}/>
+            <Field setEditingObject={setCurrentObject} obj={allObjects ? allObjects.singleTrackSchedules[0] : ''}/>
             <EditBar object={currentObject}/>
         </div>
     )

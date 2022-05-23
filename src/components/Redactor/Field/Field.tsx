@@ -1,18 +1,17 @@
 import React, {useCallback, useEffect, useState} from 'react'
 import styles from '../../../App.module.css'
 import {tDrawingObject} from '../types'
-import Konva from 'konva'
-import {UserShape} from '../UserShape'
-import Stage = Konva.Stage
 import {UserStage} from '../UserStage'
+import {UserScale} from '../UserScale'
 
 type tFieldProps = {
     setEditingObject: (object: tDrawingObject) => void
+    obj: any,
 }
 export const Field: React.FC<tFieldProps> = React.memo((props) => {
     console.log('field rerender')
 
-    const [stage, setStage] = useState<Stage | null>(null)
+    const [stage, setStage] = useState<UserStage | null>(null)
     const [stageSizes, setStageSizes] = useState<{width: number, height: number}>({
         width: 0, height: 0
     })
@@ -28,20 +27,12 @@ export const Field: React.FC<tFieldProps> = React.memo((props) => {
 
     useEffect(() => {
         if (stage) {
-            const layer = new Konva.Layer()
-            const circle = new UserShape({
-                x: stage.width() / 2,
-                y: stage.height() / 2,
-                radius: 70,
-                fill: 'red',
-                stroke: 'black',
-                strokeWidth: 4,
+            const scale = new UserScale({
+                name: 'scale',
+                stage: stage,
             })
-            layer.add(circle)
-            stage.add(layer)
-            layer.draw()
         }
-    }, [stage])
+    }, [stage, props.obj])
     useEffect(() => {
         changeWidth()
         document.addEventListener('resize', changeWidth)
@@ -54,6 +45,9 @@ export const Field: React.FC<tFieldProps> = React.memo((props) => {
     return (
         <div id={'stageContainer'}
              className={styles.field}
+             style={{
+                 border: '3px solid black'
+             }}
              ref={(node) => {
                  if (!stage) {
                      if (node && stageSizes.width && stageSizes.height) {

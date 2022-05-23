@@ -27,14 +27,12 @@ export class UserStage extends Konva.Stage {
         }
 
         this.addEventListener('dblclick', (event) => {
-            console.log('clear state')
             event.cancelBubble = true
         })
         this.addEventListener('mousedown', (event) => {
             const pos = this.getRelativePointerPosition()
             this.mouseDownStatus.x = pos.x
             this.mouseDownStatus.y = pos.y
-            console.log(this.mouseDownStatus)
             document.addEventListener('mousemove', this.onSelectionHandler)
             event.cancelBubble = true
         })
@@ -74,5 +72,8 @@ export class UserStage extends Konva.Stage {
                 rect.height(pos.y - this.mouseDownStatus.y)
             }
         }
+    }
+    registerScale = (layer: Konva.Layer) => {
+        this.layers.scale = layer
     }
 }
