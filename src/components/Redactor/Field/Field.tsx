@@ -3,6 +3,7 @@ import styles from '../../../App.module.css'
 import {tDrawingObject} from '../types'
 import {UserStage} from '../UserStage'
 import {UserScale} from '../UserScale'
+import {containerId} from '../constants'
 
 type tFieldProps = {
     setEditingObject: (object: tDrawingObject) => void
@@ -12,42 +13,60 @@ export const Field: React.FC<tFieldProps> = React.memo((props) => {
     console.log('field rerender')
 
     const [stage, setStage] = useState<UserStage | null>(null)
-    const [stageSizes, setStageSizes] = useState<{width: number, height: number}>({
+    const [stageSizes, setStageSizes] = useState<{ width: number, height: number }>({
         width: 0, height: 0
     })
 
     // callbacks
     const changeWidth = useCallback(() => {
-        const stageContainer = document.getElementById('stageContainer')
+        const stageContainer = document.getElementById(containerId)
         if (stageContainer) {
             const {width, height} = stageContainer.getBoundingClientRect()
+            console.log(width, height)
             setStageSizes({width, height})
         }
     }, [])
+    const onKeyDown = useCallback((event: KeyboardEvent) => {
+        if (stage) {
+            if (event.key === 'Control') {
+                if (document.activeElement?.id === containerId && stage.draggable()) {
+                    stage.draggable(false)
+                }
+            }
+        }
+
+    }, [stage])
+    const onKeyUp = useCallback((event: KeyboardEvent) => {
+        if (stage && !stage.draggable() && event.key === 'Control') {
+            stage.draggable(true)
+        }
+    }, [stage])
 
     useEffect(() => {
         if (stage) {
             const scale = new UserScale({
-                name: 'scale',
                 stage: stage,
             })
         }
     }, [stage, props.obj])
     useEffect(() => {
         changeWidth()
-        document.addEventListener('resize', changeWidth)
+    }, [])
+    useEffect(() => {
+        if (stage) {
+            document.addEventListener('keydown', onKeyDown)
+            document.addEventListener('keyup', onKeyUp)
+        }
 
         return () => {
-            document.removeEventListener('resize', changeWidth)
+            document.removeEventListener('keydown', onKeyDown)
+            document.removeEventListener('keyup', onKeyUp)
         }
-    }, [])
+    }, [stage])
 
     return (
         <div id={'stageContainer'}
              className={styles.field}
-             style={{
-                 border: '3px solid black'
-             }}
              ref={(node) => {
                  if (!stage) {
                      if (node && stageSizes.width && stageSizes.height) {
@@ -55,11 +74,11 @@ export const Field: React.FC<tFieldProps> = React.memo((props) => {
                              container: 'stageContainer',
                              width: stageSizes.width,
                              height: stageSizes.height,
+                             draggable: true,
                          })
-                         field.on('click', (event) => {
-                             props.setEditingObject(null)
-                             event.cancelBubble = true
-                         })
+                         const container = field.container()
+                         container.tabIndex = 1
+                         container.focus()
                          setStage(field)
                      }
                  }
@@ -67,6 +86,7 @@ export const Field: React.FC<tFieldProps> = React.memo((props) => {
         >
             Field
         </div>
+
     )
 })
 

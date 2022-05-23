@@ -1,4 +1,6 @@
 .app {
+  overflow-y: hidden;
+
   width: 100vw;
   height: 100vh;
   background-color: antiquewhite;
@@ -15,18 +17,20 @@
 }
 
 .redactor {
-  height: calc(100% - 80px);
+  min-height: calc(100% - 80px);
   background-color: gray;
   display: flex;
 }
 
-.field {
-  width: 80%;
-  background-color: aliceblue;
-}
-
 .editbar {
+  border: 2px solid black;
   width: 20%;
   background-color: white;
 }
 
+.field {
+  width: 100%;
+  border: 1px solid red;
+  background-color: aliceblue;
+  tab-index: 1;
+}

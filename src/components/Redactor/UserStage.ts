@@ -1,4 +1,5 @@
 import Konva from 'konva'
+import {containerId} from './constants'
 
 
 export class UserStage extends Konva.Stage {
@@ -12,6 +13,7 @@ export class UserStage extends Konva.Stage {
         x: number,
         y: number,
     }
+    public isCtrlPressed: boolean
 
     constructor(config: Konva.StageConfig) {
         super(config)
@@ -25,27 +27,30 @@ export class UserStage extends Konva.Stage {
             scale: undefined,
             objects: []
         }
+        this.isCtrlPressed = true
 
-        this.addEventListener('dblclick', (event) => {
-            event.cancelBubble = true
-        })
         this.addEventListener('mousedown', (event) => {
-            const pos = this.getRelativePointerPosition()
-            this.mouseDownStatus.x = pos.x
-            this.mouseDownStatus.y = pos.y
-            document.addEventListener('mousemove', this.onSelectionHandler)
-            event.cancelBubble = true
+            if (!this.draggable()) {
+                const pos = this.getRelativePointerPosition()
+                this.mouseDownStatus.x = pos.x
+                this.mouseDownStatus.y = pos.y
+                document.addEventListener('mousemove', this.onSelectionHandler)
+                event.cancelBubble = false
+            }
         })
         this.addEventListener('mouseup', (event) => {
-            this.layers.selection?.destroy()
-            delete this.layers.selection
-            document.removeEventListener('mousemove', this.onSelectionHandler)
-            event.cancelBubble = true
+            if (!this.draggable()) {
+                this.layers.selection?.destroy()
+                delete this.layers.selection
+                document.removeEventListener('mousemove', this.onSelectionHandler)
+                event.cancelBubble = true
+            }
         })
     }
 
     onSelectionHandler = () => {
         const pos = this.getRelativePointerPosition()
+        console.log(pos)
         if (!this.layers.selection) {
             if (Math.abs(pos.x - this.mouseDownStatus.x) > 20 ||
                 Math.abs(pos.y - this.mouseDownStatus.y) > 20) {
