@@ -2,6 +2,7 @@ import Konva from 'konva'
 import {containerId} from './constants'
 
 
+
 export class UserStage extends Konva.Stage {
     private layers: {
         field: Konva.Layer | undefined,
@@ -13,7 +14,8 @@ export class UserStage extends Konva.Stage {
         x: number,
         y: number,
     }
-    public isCtrlPressed: boolean
+    private scaleBy: number
+    public selectionMode: boolean
 
     constructor(config: Konva.StageConfig) {
         super(config)
@@ -27,9 +29,10 @@ export class UserStage extends Konva.Stage {
             scale: undefined,
             objects: []
         }
-        this.isCtrlPressed = true
+        this.selectionMode = true
+        this.scaleBy = 1.1
 
-        this.addEventListener('mousedown', (event) => {
+        this.on('mousedown', (event) => {
             if (!this.draggable()) {
                 const pos = this.getRelativePointerPosition()
                 this.mouseDownStatus.x = pos.x
@@ -38,13 +41,34 @@ export class UserStage extends Konva.Stage {
                 event.cancelBubble = false
             }
         })
-        this.addEventListener('mouseup', (event) => {
+        this.on('mouseup', (event) => {
             if (!this.draggable()) {
                 this.layers.selection?.destroy()
                 delete this.layers.selection
                 document.removeEventListener('mousemove', this.onSelectionHandler)
                 event.cancelBubble = true
             }
+        })
+        this.on('wheel', (event) => {
+            event.evt.preventDefault()
+            const oldScale = this.scaleX()
+            const pointer = this.getPointerPosition()
+            const mousePointTo = {
+                x: (pointer!.x - this.x()) / oldScale,
+                y: (pointer!.y - this.y()) / oldScale
+            }
+            let direction = event.evt.deltaY > 0 ? 1 : -1
+            const newScale = direction > 0 ? oldScale * this.scaleBy : oldScale / this.scaleBy
+
+            const newPos = {
+                x: pointer!.x - mousePointTo.x * newScale,
+                y: pointer!.y - mousePointTo.y * newScale,
+            }
+            this.position(newPos)
+            this.scale({
+                x: newScale,
+                y: newScale,
+            })
         })
     }
 

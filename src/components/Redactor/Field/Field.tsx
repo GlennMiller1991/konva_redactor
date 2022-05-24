@@ -29,7 +29,7 @@ export const Field: React.FC<tFieldProps> = React.memo((props) => {
     const onKeyDown = useCallback((event: KeyboardEvent) => {
         if (stage) {
             if (event.key === 'Control') {
-                if (document.activeElement?.id === containerId && stage.draggable()) {
+                if (stage.draggable()) {
                     stage.draggable(false)
                 }
             }
@@ -45,6 +45,17 @@ export const Field: React.FC<tFieldProps> = React.memo((props) => {
     useEffect(() => {
         if (stage) {
             const scale = new UserScale({
+                chartConfig: {
+                    bottomGap: 10,
+                    topGap: 10,
+                    leftGap: 10,
+                    rightGap: 10,
+                    strokeColor: 'black',
+                    strokeWidth: 1,
+                    width: 11,
+                    height: 11,
+                    fillColor: 'rgba(210, 239, 235, 0.1)',
+                },
                 stage: stage,
             })
         }
@@ -76,9 +87,6 @@ export const Field: React.FC<tFieldProps> = React.memo((props) => {
                              height: stageSizes.height,
                              draggable: true,
                          })
-                         const container = field.container()
-                         container.tabIndex = 1
-                         container.focus()
                          setStage(field)
                      }
                  }
