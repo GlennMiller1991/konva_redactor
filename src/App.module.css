@@ -29,7 +29,19 @@
 }
 
 .field {
+  position: relative;
   width: 100%;
   border: 1px solid red;
   background-color: aliceblue;
+}
+
+.controlPanel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  opacity: .4;
+}
+
+.controlPanel:hover {
+  opacity: 1;
 }

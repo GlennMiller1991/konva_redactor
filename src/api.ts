@@ -5,7 +5,7 @@ export const serverAPI = {
         return fetch(
             `${baseUrl}/motion-schedule/new?trackId=${trackId}&locomotiveCurrent=${locomotiveCurrent}`,
             {
-                method: 'POST',
+                method: 'GET',
                 mode: 'cors',
                 // @ts-ignore
                 headers: {

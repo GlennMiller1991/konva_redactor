@@ -1,17 +1,16 @@
 import React, {useCallback, useEffect, useState} from 'react'
 import styles from '../../../App.module.css'
-import {tDrawingObject} from '../types'
+import {FreehandSingleTrackScheduleDto, tDrawingObject} from '../types'
 import {UserStage} from '../UserStage'
 import {UserScale} from '../UserScale'
 import {containerId} from '../constants'
 
 type tFieldProps = {
     setEditingObject: (object: tDrawingObject) => void
-    obj: any,
+    obj: FreehandSingleTrackScheduleDto | null,
 }
 export const Field: React.FC<tFieldProps> = React.memo((props) => {
     console.log('field rerender')
-
     const [stage, setStage] = useState<UserStage | null>(null)
     const [stageSizes, setStageSizes] = useState<{ width: number, height: number }>({
         width: 0, height: 0
@@ -44,20 +43,38 @@ export const Field: React.FC<tFieldProps> = React.memo((props) => {
 
     useEffect(() => {
         if (stage) {
-            const scale = new UserScale({
-                chartConfig: {
-                    bottomGap: 10,
-                    topGap: 10,
-                    leftGap: 10,
-                    rightGap: 10,
-                    strokeColor: 'black',
-                    strokeWidth: 1,
-                    width: 11,
-                    height: 11,
-                    fillColor: 'rgba(210, 239, 235, 0.1)',
-                },
-                stage: stage,
-            })
+            if (props.obj) {
+                const timeDelimeter = 10
+                const time = new Array(1440 / timeDelimeter)
+                    .fill(0)
+                    .map((value, index) => {
+                        return index * timeDelimeter
+                    })
+                const timeCaptions = time.map((value) => String(value))
+                const stationsCoords = props.obj.stations.map((station) => {
+                    return station.coordinate
+                })
+                const stationsCaptions = props.obj.stations.map((station) => {
+                    return station.name
+                })
+                const scale = new UserScale({
+                    chartConfig: {
+                        bottomGap: 10,
+                        topGap: 10,
+                        leftGap: 10,
+                        rightGap: 10,
+                        strokeColor: 'black',
+                        strokeWidth: 1,
+                        fillColor: 'rgba(20, 239, 235, 0.3)',
+                        fontSize: 12,
+                    },
+                    stage: stage,
+                    hValues: time,
+                    vValues: stationsCoords,
+                    hCaptions: timeCaptions,
+                    vCaptions: stationsCaptions,
+                })
+            }
         }
     }, [stage, props.obj])
     useEffect(() => {
@@ -76,25 +93,41 @@ export const Field: React.FC<tFieldProps> = React.memo((props) => {
     }, [stage])
 
     return (
-        <div id={'stageContainer'}
-             className={styles.field}
-             ref={(node) => {
-                 if (!stage) {
-                     if (node && stageSizes.width && stageSizes.height) {
-                         const field = new UserStage({
-                             container: 'stageContainer',
-                             width: stageSizes.width,
-                             height: stageSizes.height,
-                             draggable: true,
-                         })
-                         setStage(field)
+        <>
+            <div id={'stageContainer'}
+                 className={styles.field}
+                 ref={(node) => {
+                     if (!stage) {
+                         if (node && stageSizes.width && stageSizes.height) {
+                             const field = new UserStage({
+                                 container: 'stageContainer',
+                                 width: stageSizes.width,
+                                 height: stageSizes.height,
+                                 draggable: true,
+                             })
+                             setStage(field)
+                         }
                      }
-                 }
-             }}
-        >
-            Field
-        </div>
-
+                 }}
+            >
+                Field
+            </div>
+            {
+                stage &&
+                <div className={styles.controlPanel}>
+                    <button onClick={() => {
+                        stage!.fitBounds('x')
+                    }}>
+                        X
+                    </button>
+                    <button onClick={() => {
+                        stage!.fitBounds('y')
+                    }}>
+                        Y
+                    </button>
+                </div>
+            }
+        </>
     )
 })
 

@@ -3,27 +3,41 @@ import styles from './App.module.css'
 import {Redactor} from './components/Redactor/Redactor'
 import {serverAPI} from './api'
 import data from './data/data.json'
-import {FreehandScheduleDto} from './components/Redactor/types'
+import {FreehandScheduleDto, FreehandSingleTrackScheduleDto} from './components/Redactor/types'
 
 function App() {
-    const [obj, setObj] = useState<any>(null)
-
+    const [obj, setObj] = useState<FreehandScheduleDto | null>(null)
+    const [sTS, setSTS] = useState<FreehandSingleTrackScheduleDto | null>(null)
 
     useEffect(() => {
         // запусти сервер
         serverAPI.getShedule()
             .then(res => res.json())
             .then(res => {
-                if (res.status !== 200) {
-                    setObj(data as unknown as FreehandScheduleDto)
-                }
+                setObj(res)
             })
     }, [])
 
     return (
         <div className={styles.app}>
             <h1 className={styles.header}>Konva</h1>
-            <Redactor object={obj}/>
+            {obj &&
+                <div>
+                    {
+                        obj.singleTrackSchedules.map((sTS, index) => {
+                            return (
+                                <button key={index}
+                                        onClick={() => {
+                                            setSTS(sTS)
+                                        }}>
+                                    {index + 1}
+                                </button>
+                            )
+                        })
+                    }
+                </div>
+            }
+            <Redactor object={sTS}/>
         </div>
     )
 }

@@ -30,7 +30,7 @@ type PairOfNumbers = { first: number, second: number }
 type LocomotiveCurrent = "DIRECT_CURRENT" | "ALTERNATING_CURRENT"
 
 /** Данные графика движения по одному пути */
-type FreehandSingleTrackScheduleDto = {
+export type FreehandSingleTrackScheduleDto = {
     trackNumber: number, // Номер пути
     stations: StationDto[], // Массив станций, доступных на данном пути
     routes: FreehandRouteDto[], // Массив "ниток" графика движения

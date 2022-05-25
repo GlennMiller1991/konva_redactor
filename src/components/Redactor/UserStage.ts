@@ -1,7 +1,4 @@
 import Konva from 'konva'
-import {containerId} from './constants'
-
-
 
 export class UserStage extends Konva.Stage {
     private layers: {
@@ -74,7 +71,6 @@ export class UserStage extends Konva.Stage {
 
     onSelectionHandler = () => {
         const pos = this.getRelativePointerPosition()
-        console.log(pos)
         if (!this.layers.selection) {
             if (Math.abs(pos.x - this.mouseDownStatus.x) > 20 ||
                 Math.abs(pos.y - this.mouseDownStatus.y) > 20) {
@@ -104,5 +100,19 @@ export class UserStage extends Konva.Stage {
     }
     registerScale = (layer: Konva.Layer) => {
         this.layers.scale = layer
+    }
+    fitBounds(side: 'x' | 'y') {
+        const size = side === 'x' ? this.width() : this.height()
+        const scale = this.scale()
+        const scene = this.getClientRect()
+        const diff = size / ((side === 'x' ? scene.width : scene.height) / scale.x)
+        this.scale({
+            x: diff,
+            y: diff,
+        })
+        this.absolutePosition({
+            x: 0,
+            y: 0,
+        })
     }
 }
