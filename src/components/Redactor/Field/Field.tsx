@@ -1,9 +1,10 @@
 import React, {useCallback, useEffect, useState} from 'react'
 import styles from '../../../App.module.css'
-import {FreehandSingleTrackScheduleDto, tDrawingObject} from '../types'
+import {FreehandRouteDto, FreehandSingleTrackScheduleDto, tDrawingObject} from '../types'
 import {UserStage} from '../UserStage'
-import {UserScale} from '../UserScale'
+import {kmPxl, minPxl, UserScale} from '../UserScale'
 import {containerId} from '../constants'
+import Konva from 'konva'
 
 type tFieldProps = {
     setEditingObject: (object: tDrawingObject) => void
@@ -57,11 +58,11 @@ export const Field: React.FC<tFieldProps> = React.memo((props) => {
                 const stationsCaptions = props.obj.stations.map((station) => {
                     return station.name
                 })
-                const scale = new UserScale({
+                new UserScale({
                     chartConfig: {
                         bottomGap: 10,
-                        topGap: 10,
-                        leftGap: 10,
+                        topGap: 0,
+                        leftGap: 0,
                         rightGap: 10,
                         strokeColor: 'black',
                         strokeWidth: 1,
@@ -74,6 +75,32 @@ export const Field: React.FC<tFieldProps> = React.memo((props) => {
                     hCaptions: timeCaptions,
                     vCaptions: stationsCaptions,
                 })
+                const routes = props.obj.prototypeRoutes
+                console.log(routes)
+                const firstRoute = routes[0] as FreehandRouteDto
+                const layer = new Konva.Layer()
+                let lines: Konva.Line[] = []
+                for (let i = 0; i < firstRoute.spans.length; i++) {
+                    const line = new Konva.Line({
+                        points: firstRoute
+                            .spans[i]
+                            .points!
+                            .map((point: number, index: number) => {
+                                if (index % 2 === 0) {
+                                    return (point + (i === 0 ? 0 : firstRoute.spans[i].a)) * minPxl
+                                } else {
+                                    return point * kmPxl
+                                }
+                            }),
+                        stroke: 'black',
+                        strokeWIdth: 1,
+                    })
+                    lines.push(line)
+                }
+
+                layer.add(...lines)
+                stage.add(layer)
+
             }
         }
     }, [stage, props.obj])

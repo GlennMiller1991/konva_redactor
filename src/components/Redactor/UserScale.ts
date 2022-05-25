@@ -3,8 +3,8 @@ import {UserStage} from './UserStage'
 import {StationDto} from './types'
 import LayerConfig = Konva.LayerConfig
 
-const kmPxl = 5
-const minPxl = 10
+export const kmPxl = 20
+export const minPxl = 5
 
 interface iUserScale {
 
@@ -153,7 +153,6 @@ export class UserScale extends Konva.Layer {
                 const xOne = this.chartConfig.leftGap - 3
                 const xTwo = this.chartConfig.leftGap + len + 3
                 const y = this.chartConfig.topGap + (coords[i] * (i === 0 ? 0 : kmPxl)) - this.chartConfig.fontSize /2
-                debugger
                 const caption = captions[i]
                 const textWidth = caption.length * this.chartConfig.fontSize
                 const textOne = new Konva.Text({

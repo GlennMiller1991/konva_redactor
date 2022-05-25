@@ -45,7 +45,7 @@ export type StationDto = {
 }
 
 /** "Нитка" графика */
-type FreehandRouteDto = {
+export type FreehandRouteDto = {
     tractiveCalculationId: number, // ID результатов тягового расчета в БД
     spans: SpanDto[], // Массив с данными перегонов
     mass: number, // масса поезда
@@ -59,7 +59,7 @@ type SpanDto = {
     tp?: "h" | undefined, // Тип "перегона". "h" - Halt - стоянка, undefined - Span - перегон между станциями.
     a: number, // anchor - временная координата начальной точки
     t: Boolean, // transparent - признак "прозрачности". Сквозь "прозрачные" перегоны (например через стоянку на станции с путевым развитием) можно пропускать другие нитки. Используется при валидации графика.
-    points?: number // Массив точек для отрисовки линии перегона. Формат, как в Konva: [t0, x0, t1, x1, t2, x2, ...]
+    points?: number[] // Массив точек для отрисовки линии перегона. Формат, как в Konva: [t0, x0, t1, x1, t2, x2, ...]
 }
 
 type TrackCategoryDto = {
